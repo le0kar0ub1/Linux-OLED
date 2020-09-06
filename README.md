@@ -1,4 +1,4 @@
-# Linux-OLED
+# gammastep-wrapper
 
 OLED linux screen control.
 
@@ -10,7 +10,7 @@ This repository contain a script wrapper for the `gammastep` (`redshift` fork).
 
 Install the package `gammastep` (AUR-available for archlinux).
 
-Install the content of `Linux-OLED/etc` in `usr/local/etc/` and `Linux-OLED/bin` in `usr/local/bin`.
+Install the content of `gammastep-wrapper/etc` in `usr/local/etc/` and `gammastep-wrapper/bin` in `usr/local/bin`.
 You can also modify the path in the script.
 
 # Config
