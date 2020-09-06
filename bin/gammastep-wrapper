@@ -1,0 +1,65 @@
+#!/bin/sh
+
+config_static=/usr/local/etc/gammastep-wrapper/static.conf
+config_dynamic=/usr/local/etc/gammastep-wrapper/dynamic.conf
+
+# Source config files
+source $config_static
+source $config_dynamic
+
+case "$1" in
+	"-")
+		if [ $OLED_BACKLIGHT_CORRECTION_BACKLIGHT -gt $OLED_BACKLIGHT_CORRECTION_STEP ]
+		then
+    		OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$((OLED_BACKLIGHT_CORRECTION_BACKLIGHT - $OLED_BACKLIGHT_CORRECTION_STEP))
+		elif [ $OLED_BACKLIGHT_CORRECTION_BACKLIGHT -eq $OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MIN ]
+		then
+			exit 0
+		else
+			OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MIN
+    	fi
+		;;
+	"+")
+		if [ $OLED_BACKLIGHT_CORRECTION_BACKLIGHT -lt $((100 - $OLED_BACKLIGHT_CORRECTION_STEP)) ]
+		then
+    		OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$((OLED_BACKLIGHT_CORRECTION_BACKLIGHT + $OLED_BACKLIGHT_CORRECTION_STEP))
+		elif [ $OLED_BACKLIGHT_CORRECTION_BACKLIGHT -eq $OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MAX ]
+		then
+			exit 0
+		else
+			OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MAX
+		fi
+		;;
+	*)
+		if [[ $1 =~ ^=(0|[1-9][0-9]?|100)$ ]]
+		then
+			set=$(echo "$1" | cut -d '=' -f 2 | xargs)
+			if [ $set -ge $OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MIN ] && [ $set -le $OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MAX ]
+			then
+				OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$set
+			else
+				echo "Can't set brightness to $set% (MIN: $OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MIN%, MAX: $OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MAX%)"
+				exit 1
+			fi
+		else
+			echo "Invalid argument, usage: gammastep-wrapper (+|-|=(0|[1-9][0-9]?|100))"
+			exit 1
+		fi
+esac
+
+# Check if the PID exist
+# Kill and wait 5 seconds
+kill -0 $OLED_BACKLIGHT_CORRECTION_LAST_PID
+if [ $? -eq 0 ]
+then
+	kill $OLED_BACKLIGHT_CORRECTION_LAST_PID
+	sleep 5s
+fi
+
+echo "OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$OLED_BACKLIGHT_CORRECTION_BACKLIGHT" > $config_dynamic
+
+floated="0$(echo "scale=1; $OLED_BACKLIGHT_CORRECTION_BACKLIGHT/100" | bc)"
+
+gammastep -b $floated -l $OLED_BACKLIGHT_CORRECTION_GPS &
+	echo "OLED_BACKLIGHT_CORRECTION_LAST_PID=$!" >> $config_dynamic &
+	echo "Backlight set to $OLED_BACKLIGHT_CORRECTION_BACKLIGHT%"
