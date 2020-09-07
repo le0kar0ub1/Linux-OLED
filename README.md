@@ -4,7 +4,7 @@ OLED linux screen control.
 
 Firstly, here is the bible https://wiki.archlinux.org/index.php/backlight.
 
-This repository contain a script wrapper for the `gammastep` (`redshift` fork).
+This repository contain a script wrapper for the `gammastep` package (`redshift` fork).
 
 # Install
 
@@ -17,11 +17,10 @@ You can also modify the path in the script.
 
 The `etc` directory contain static and dynamic config that you should modify for your personnal usage.
 
-*OLED_BACKLIGHT_CORRECTION_BACKLIGHT* = the current backlight
 *OLED_BACKLIGHT_CORRECTION_STEP* = inc/dec the backlight by this number
-*OLED_BACKLIGHT_CORRECTION_GPS* = latitude:longitude
-*OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MAX* = maximum backlight
-*OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MIN* = minimum backlight
+*OLED_BACKLIGHT_CORRECTION_GPS* = latitude:longitude (networking is disabled -> use this)
+*OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MAX* = maximum backlight allowed
+*OLED_BACKLIGHT_CORRECTION_BACKLIGHT_MIN* = minimum backlight allowed
 
 # Usage
 

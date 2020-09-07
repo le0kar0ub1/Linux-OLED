@@ -56,6 +56,11 @@ then
 	sleep 5s
 fi
 
+if [ "$(nmcli radio wifi)" == "enabled" ]
+then
+	OLED_BACKLIGHT_CORRECTION_GPS=""
+fi
+
 echo "OLED_BACKLIGHT_CORRECTION_BACKLIGHT=$OLED_BACKLIGHT_CORRECTION_BACKLIGHT" > $config_dynamic
 
 floated="0$(echo "scale=1; $OLED_BACKLIGHT_CORRECTION_BACKLIGHT/100" | bc)"
